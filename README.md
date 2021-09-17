@@ -1,0 +1,1 @@
+The following repository will be for exercises done to practice SQL in our Codeup class! :) 
