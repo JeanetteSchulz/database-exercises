@@ -1,14 +1,14 @@
 -- Use the albums_db database
 USE albums_db;
 
--- Explore the structure of the albums table.
+-- 3.Explore the structure of the albums table.
 Describe albums;
 
 -- a. How many rows are in the albums table? 31, also can be seen in 'Table Information' in lower left
 SELECT COUNT(*) FROM albums;
 
 -- b. How many unique artist names are in the albums table? 23
-SELECT DISTINCT artist FROM albums; 
+SELECT COUNT(DISTINCT artist) FROM albums; 
 
 -- c. What is the primary key for the albums table? id
 SHOW KEYS FROM albums WHERE Key_name = 'PRIMARY';
@@ -38,9 +38,9 @@ FROM albums
 WHERE name = 'Nevermind';
 
 -- d. Which albums were released in the 1990s
-SELECT name
+SELECT name, release_date
 FROM albums
-WHERE release_date = 1990;
+WHERE release_date >= 1990 AND release_date < 2000;
 
 -- e. Which albums had less than 20 million certified sales
 SELECT name
