@@ -23,15 +23,16 @@ ORDER BY Days_At_Company DESC;
 
 -- 5. Find the smallest and largest current salary from the salaries table.
 SELECT MIN(salary) AS Smallest_Salary, MAX(salary) AS Largest_Salary
-FROM salaries; 
+FROM salaries
+WHERE to_date > CURDATE(); 
 
 -- 6. Use your knowledge of built in SQL functions to generate a username for all of the employees. A username should be all lowercase, and consist of the first character of the employees first name, the first 4 characters of the employees last name, an underscore, the month the employee was born, and the last two digits of the year that they were born. 
 SELECT LOWER( CONCAT( 
-		 SUBSTR(first_name,1,1), 
-		 SUBSTR(last_name,1,4), 
+		 SUBSTR(first_name,1,1), #first initial of first name 
+		 SUBSTR(last_name,1,4),  #first 4 of last name
 		'_', 
-		DATE_FORMAT(birth_date, '%m'),
-		DATE_FORMAT(birth_date, '%y')
+		DATE_FORMAT(birth_date, '%m'), # month
+		DATE_FORMAT(birth_date, '%y') # last two digits of year
 		)) 
 		AS username,
 		first_name,
