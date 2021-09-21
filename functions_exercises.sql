@@ -31,7 +31,7 @@ SELECT LOWER( CONCAT(
 		 SUBSTR(last_name,1,4), 
 		'_', 
 		DATE_FORMAT(birth_date, '%m'),
-		SUBSTR( CAST(YEAR(birth_date) as CHAR), 3,4)
+		DATE_FORMAT(birth_date, '%y')
 		)) 
 		AS username,
 		first_name,
