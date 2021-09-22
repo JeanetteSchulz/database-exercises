@@ -36,22 +36,31 @@ WHERE first_name IN('Irena', 'Vidya','Maya')
 GROUP BY first_name;
 
 #8. Using your query that generates a username for all of the employees, generate a count employees for each unique username. Are there any duplicate usernames? BONUS: How many duplicate usernames are there?
-SELECT COUNT(LOWER( CONCAT( 
-		 SUBSTR(first_name,1,1), #first initial of first name 
-		 SUBSTR(last_name,1,4),  #first 4 of last name
-		'_', 
-		DATE_FORMAT(birth_date, '%m'), # month
-		DATE_FORMAT(birth_date, '%y') # last two digits of year
-		)))
+SELECT 
+	COUNT(
+		LOWER( 
+			CONCAT( 
+					SUBSTR(first_name,1,1), #first initial of first name 
+					SUBSTR(last_name,1,4),  #first 4 of last name
+					'_', 
+					DATE_FORMAT(birth_date, '%m'), # month
+					DATE_FORMAT(birth_date, '%y') # last two digits of year
+					)
+			)
+		)
 		AS ALL_Usernames,
 	######################################	
-		COUNT(DISTINCT LOWER( CONCAT( 
-		 SUBSTR(first_name,1,1), #first initial of first name 
-		 SUBSTR(last_name,1,4),  #first 4 of last name
-		'_', 
-		DATE_FORMAT(birth_date, '%m'), # month
-		DATE_FORMAT(birth_date, '%y') # last two digits of year
-		)))
+	COUNT(
+		DISTINCT LOWER( 
+					CONCAT( 
+							SUBSTR(first_name,1,1), #first initial of first name 
+							SUBSTR(last_name,1,4),  #first 4 of last name
+							'_', 
+							DATE_FORMAT(birth_date, '%m'), # month
+							DATE_FORMAT(birth_date, '%y') # last two digits of year
+						  )
+					  )
+		 )
 		AS Unique_Usernames,
 	######################################	
 		300024-285872 AS Duplicate_Usernames
@@ -87,11 +96,13 @@ GROUP BY emp_no;
 #Now find the max salary for each current employee where that max salary is greater than $150,000.
 SELECT emp_no AS Employee, MAX(salary) AS Maximum_Salary
 FROM salaries
-WHERE to_date > CURDATE() AND salary > 150000
-GROUP BY emp_no;
+WHERE to_date > CURDATE() 
+GROUP BY emp_no
+HAVING Maximum_Salary > 150000;
 
 #Find the current average salary for each employee where that average salary is between $80k and $90k.
 SELECT emp_no AS Employee, avg(salary) AS Average_Salary
 FROM salaries
-WHERE to_date > CURDATE() AND (salary BETWEEN 80000 AND 90000)
-GROUP BY emp_no;
+WHERE to_date > CURDATE()
+GROUP BY emp_no
+HAVING Average_Salary BETWEEN 80000 AND 90000;
