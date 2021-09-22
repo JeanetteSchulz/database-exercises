@@ -60,17 +60,38 @@ FROM employees;
 #9. More practice with aggregate functions:
 
 #Find the historic average salary for all employees. Now determine the current average salary.
-SELECT avg(salary) AS Historic_Average, 
-CASE WHEN to_date > CURDATE() THEN avg(salary) END AS Current_Average
-FROM salaries
-GROUP BY salary;
+SELECT avg(salary) AS Historic_Average 
+FROM salaries;
 
 SELECT avg(salary) AS Current_Average
 FROM salaries
 WHERE to_date > CURDATE();
 
 #Now find the historic average salary for each employee. Reminder that when you hear "for each" in the problem statement, you'll probably be grouping by that exact column.
+SELECT emp_no AS Employee, avg(salary) AS Average_Salary
+FROM salaries 
+GROUP BY emp_no;
+
 #Find the current average salary for each employee.
+SELECT emp_no AS Employee, avg(salary) AS Average_Salary
+FROM salaries
+WHERE to_date > CURDATE()
+GROUP BY emp_no;
+
 #Find the maximum salary for each current employee.
+SELECT emp_no AS Employee, MAX(salary) AS Maximum_Salary
+FROM salaries
+WHERE to_date > CURDATE()
+GROUP BY emp_no;
+
 #Now find the max salary for each current employee where that max salary is greater than $150,000.
+SELECT emp_no AS Employee, MAX(salary) AS Maximum_Salary
+FROM salaries
+WHERE to_date > CURDATE() AND salary > 150000
+GROUP BY emp_no;
+
 #Find the current average salary for each employee where that average salary is between $80k and $90k.
+SELECT emp_no AS Employee, avg(salary) AS Average_Salary
+FROM salaries
+WHERE to_date > CURDATE() AND (salary BETWEEN 80000 AND 90000)
+GROUP BY emp_no;
