@@ -106,7 +106,19 @@ WHERE salaries.to_date > CURDATE()
 ORDER BY salaries.salary DESC
 LIMIT 1;
 
+##INSTRUCTOR'S SOLUTION
 #10. Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS 'Employee Name', dept_name AS Department, CONCAT(managers.first_name, ' ', managers.last_name) AS 'Manager Name'
+FROM employees e
+JOIN dept_emp USING(emp_no)
+JOIN departments USING(dept_no)
+JOIN dept_manager USING(dept_no)
+JOIN employees as managers ON managers.emp_no = dept_manager.emp_no
+WHERE dept_emp.to_date > CURDATE() 
+	  AND dept_manager.to_date > CURDATE();
+
+##The Graveyard of attempts :(
+/*10. Bonus Find the names of all current employees, their department name, and their current manager's name.
 SELECT A.emp_no, CONCAT(A.first_name, ' ', A.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(B.first_name, ' ', B.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
 FROM employees A, employees B
 #JOIN A.emp_no = dept_emp.emp_no -- RYAN's CODE
@@ -177,3 +189,15 @@ WHERE e.emp_no = dept_emp.emp_no -- RYAN's CODE
 	  AND dept_emp.to_date > CURDATE() -- current employee, NOT READING THIS ROW!!
       AND dept_manager.to_date > CURDATE() -- current manager
 ;
+
+#10. Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT A.emp_no, CONCAT(A.first_name, ' ', A.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(B.first_name, ' ', B.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
+FROM employees A, employees B
+JOIN dept_manager USING(emp_no) -- Needed for Current Manager
+JOIN dept_emp ON dept_emp.emp_no = A.emp_no -- inlcuded to find CURRENT employees <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Problem child
+JOIN departments ON departments.dept_no = dept_emp.dept_no -- Needed for Department Name
+WHERE B.emp_no = dept_manager.emp_no
+	  AND dept_emp.to_date > CURDATE() -- current employee
+      AND dept_manager.to_date > CURDATE() -- current manager
+;
+*/
