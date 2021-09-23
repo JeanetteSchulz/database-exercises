@@ -82,7 +82,7 @@ ORDER BY Average_Salary DESC
 LIMIT 1;
 
 #8. Who is the highest paid employee in the Marketing department?
-SELECT employees.first_name, employees.last_name, salaries.salary
+SELECT employees.first_name AS 'First Name', employees.last_name 'Last Name'
 FROM employees
 JOIN salaries USING(emp_no)
 JOIN dept_emp USING(emp_no)
@@ -90,18 +90,27 @@ JOIN titles USING (emp_no)
 JOIN departments USING (dept_no)
 WHERE departments.dept_name = 'Marketing' 
 	  AND dept_emp.to_date > CURDATE() -- Currently employed in Marketing
-      AND salaries.to_date > CURDATE(); -- Current received Salary
+      AND salaries.to_date > CURDATE() -- Current received Salary
+      AND titles.to_date > CURDATE() -- Currently has a title
+ORDER BY salaries.salary DESC
+LIMIT 1;
 
+#9. Which current department manager has the highest salary?
+SELECT departments.dept_name AS Department, CONCAT(employees.first_name, ' ', employees.last_name) AS 'Current Manager', salaries.salary AS Salary
+FROM dept_manager
+JOIN employees USING(emp_no)
+JOIN salaries USING(emp_no)
+JOIN departments USING(dept_no)
+WHERE salaries.to_date > CURDATE()
+	  AND dept_manager.to_date > CURDATE()
+ORDER BY salaries.salary DESC
+LIMIT 1;
 
-SELECT * 
-FROM titles;
-
-SELECT *
-FROM departments;
-
-SELECT * 
-FROM dept_emp;
-
-SELECT *
-FROM employees;
-
+#10. Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT employees.first_name, employees.last_name
+FROM employees
+JOIN dept_manager USING(emp_no)
+JOIN departments USING(dept_no)
+JOIN dept_emp USING (emp_no) -- included to find CURRENT employees
+WHERE dept_emp.to_date > CURDATE()
+GROUP BY employees.first_name, employees.last_name;
