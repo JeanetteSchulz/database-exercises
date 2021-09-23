@@ -70,7 +70,8 @@ FROM employees;
 
 #Find the historic average salary for all employees. Now determine the current average salary.
 SELECT avg(salary) AS Historic_Average 
-FROM salaries;
+FROM salaries
+WHERE to_date < CURDATE(); -- Historic is seen here as salaries BEFORE current date
 
 SELECT avg(salary) AS Current_Average
 FROM salaries
@@ -79,6 +80,7 @@ WHERE to_date > CURDATE();
 #Now find the historic average salary for each employee. Reminder that when you hear "for each" in the problem statement, you'll probably be grouping by that exact column.
 SELECT emp_no AS Employee, avg(salary) AS Average_Salary
 FROM salaries 
+WHERE to_date < CURDATE() -- Historic is seen here as salaries BEFORE current date
 GROUP BY emp_no;
 
 #Find the current average salary for each employee.
