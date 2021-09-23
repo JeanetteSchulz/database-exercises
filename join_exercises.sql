@@ -107,23 +107,16 @@ ORDER BY salaries.salary DESC
 LIMIT 1;
 
 #10. Bonus Find the names of all current employees, their department name, and their current manager's name.
-SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employee Name', departments.dept_name AS 'Department', CONCAT(employees.first_name, ' ', employees.last_name) AS 'Manager'
-FROM employees 
-JOIN dept_emp USING (emp_no) -- included to find CURRENT employees
-#JOIN dept_manager USING(emp_no)
-JOIN departments ON departments.dept_no = dept_emp.dept_no
-WHERE dept_emp.to_date > CURDATE() -- current employee
-	  AND Manager ;
- 
-#SELF JOIN Attempt
-SELECT CONCAT(A.first_name, ' ', A.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(B.first_name, ' ', B.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
+SELECT A.emp_no, CONCAT(A.first_name, ' ', A.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(B.first_name, ' ', B.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
 FROM employees A, employees B
-JOIN dept_manager USING(emp_no)
-JOIN dept_emp USING (emp_no) -- inlcuded to find CURRENT employees
-JOIN departments ON departments.dept_no = dept_emp.dept_no
+#JOIN A.emp_no = dept_emp.emp_no -- RYAN's CODE
+JOIN dept_manager ON dept_manager.emp_no = B.emp_no -- Needed for Current Manager
+JOIN dept_emp ON dept_emp.emp_no = A.emp_no-- inlcuded to find CURRENT employees
+JOIN departments ON departments.dept_no = dept_emp.dept_no -- Needed for Department Name
 WHERE B.emp_no = dept_manager.emp_no
-	  AND dept_emp.to_date > CURDATE() -- current employee
-      AND dept_manager.to_date > CURDATE(); -- current manager
+	  AND dept_emp.to_date > CURDATE() -- current employee, NOT READING THIS ROW!!
+      AND dept_manager.to_date > CURDATE() -- current manager
+;
 
 #CURRENT MANAGERS
 SELECT departments.dept_name AS 'Department Name', CONCAT(employees.first_name, ' ', employees.last_name) AS 'Current Manager'
@@ -131,3 +124,56 @@ FROM dept_manager
 JOIN employees USING(emp_no)
 JOIN departments ON dept_manager.dept_no = departments.dept_no
 WHERE dept_manager.to_date > CURDATE();
+
+SELECT *
+FROM dept_emp
+JOIN departments USING(dept_no)
+WHERE emp_no = 10001;
+
+#10. Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT e.emp_no, CONCAT(e.first_name, ' ', e.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(M.first_name, ' ', M.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
+FROM employees e, employees M
+JOIN dept_emp ON e.emp_no = dept_emp.emp_no -- inlcuded to find CURRENT employees
+JOIN dept_manager ON dept_manager.emp_no = M.emp_no -- Needed for Current Manager
+
+JOIN departments ON departments.dept_no = dept_emp.dept_no -- Needed for Department Name
+WHERE M.emp_no = dept_manager.emp_no
+
+	  AND dept_emp.to_date > CURDATE() -- current employee, NOT READING THIS ROW!!
+      AND dept_manager.to_date > CURDATE() -- current manager
+;
+
+#10. Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT e.emp_no, CONCAT(e.first_name, ' ', e.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(M.first_name, ' ', M.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
+FROM employees e, employees M
+JOIN dept_emp ON dept_emp.emp_no = M.emp_no -- inlcuded to find CURRENT employees
+JOIN dept_manager ON dept_manager.emp_no = M.emp_no -- Needed for Current Manager
+JOIN departments ON departments.dept_no = dept_emp.dept_no -- Needed for Department Name
+WHERE M.emp_no = dept_manager.emp_no
+
+	  AND dept_emp.to_date > CURDATE() -- current employee, NOT READING THIS ROW!!
+      AND dept_manager.to_date > CURDATE() -- current manager
+;
+
+SELECT *
+FROM employees;
+SELECT *
+FROM dept_emp;
+SELECT *
+FROM dept_manager;
+
+
+#JOIN e.emp_no = dept_emp.emp_no -- RYAN's CODE
+
+##Internet try
+SELECT e.emp_no, CONCAT(e.first_name, ' ', e.last_name) AS 'Employees', CONCAT(M.first_name, ' ', M.last_name) AS 'Managers'
+FROM employees e
+JOIN dept_emp ON dept_emp.emp_no = e.emp_no
+
+JOIN dept_manager ON dept_manager.emp_no = e.emp_no
+INNER JOIN employees M ON M.emp_no = dept_manager.emp_no
+JOIN departments ON departments.dept_no = dept_emp.dept_no -- Needed for Department Name
+WHERE e.emp_no = dept_emp.emp_no -- RYAN's CODE
+	  AND dept_emp.to_date > CURDATE() -- current employee, NOT READING THIS ROW!!
+      AND dept_manager.to_date > CURDATE() -- current manager
+;
