@@ -107,10 +107,27 @@ ORDER BY salaries.salary DESC
 LIMIT 1;
 
 #10. Bonus Find the names of all current employees, their department name, and their current manager's name.
-SELECT employees.first_name, employees.last_name
-FROM employees
-JOIN dept_manager USING(emp_no)
-JOIN departments USING(dept_no)
+SELECT CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employee Name', departments.dept_name AS 'Department', CONCAT(employees.first_name, ' ', employees.last_name) AS 'Manager'
+FROM employees 
 JOIN dept_emp USING (emp_no) -- included to find CURRENT employees
-WHERE dept_emp.to_date > CURDATE()
-GROUP BY employees.first_name, employees.last_name;
+#JOIN dept_manager USING(emp_no)
+JOIN departments ON departments.dept_no = dept_emp.dept_no
+WHERE dept_emp.to_date > CURDATE() -- current employee
+	  AND Manager ;
+ 
+#SELF JOIN Attempt
+SELECT CONCAT(A.first_name, ' ', A.last_name) AS 'Employees', departments.dept_name AS 'Department', CONCAT(B.first_name, ' ', B.last_name) AS 'Managers', dept_emp.to_date, dept_manager.to_date
+FROM employees A, employees B
+JOIN dept_manager USING(emp_no)
+JOIN dept_emp USING (emp_no) -- inlcuded to find CURRENT employees
+JOIN departments ON departments.dept_no = dept_emp.dept_no
+WHERE B.emp_no = dept_manager.emp_no
+	  AND dept_emp.to_date > CURDATE() -- current employee
+      AND dept_manager.to_date > CURDATE(); -- current manager
+
+#CURRENT MANAGERS
+SELECT departments.dept_name AS 'Department Name', CONCAT(employees.first_name, ' ', employees.last_name) AS 'Current Manager'
+FROM dept_manager
+JOIN employees USING(emp_no)
+JOIN departments ON dept_manager.dept_no = departments.dept_no
+WHERE dept_manager.to_date > CURDATE();
