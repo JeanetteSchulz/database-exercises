@@ -25,6 +25,17 @@ WHERE salaries.to_date > NOW() -- If we use to_date from TITLES we will only get
 					FROM employees
 					WHERE first_name LIKE 'Aamod'
                     );
+-- INSTRUCTOR SOLUTION
+SELECT DISTINCT title
+FROM titles
+WHERE emp_no IN 
+(
+	SELECT emp_no
+	FROM employees
+	JOIN dept_emp USING (emp_no)
+	WHERE first_name = 'aamod' 
+	AND to_date > NOW()
+);
 
 #3. How many people in the employees table are no longer working for the company? Give the answer in a comment in your code.
 -- Planning the inner query
@@ -33,7 +44,17 @@ FROM employees;
 
 SELECT emp_no, to_date
 FROM dept_emp
-WHERE to_date <= NOW();
+WHERE to_date <= NOW(); ##WRONG!!!
+
+-- INSTRUCTOR SOLUTION
+Select *
+FROM employees
+WHERE emp_no NOT IN
+(
+	SELECT emp_no
+    FROM dept_emp
+    WHERE to_date > NOW()
+);
 
 -- Placing subquery in outer query
 SELECT *
@@ -66,7 +87,7 @@ WHERE gender = 'F'
 -- Planning the inner query
 SELECT AVG(salary)
 FROM salaries
-WHERE to_date <= NOW(); -- Historical average is being interpreted as all non-current salaries
+WHERE to_date > NOW(); -- Historical average is being interpreted as all non-current salaries
 
 -- Placing subquery in outer query
 SELECT first_name, last_name, salary
@@ -75,9 +96,19 @@ JOIN salaries USING(emp_no)
 WHERE salary > (
 				SELECT AVG(salary)
 				FROM salaries
-				WHERE to_date <= NOW()
+				WHERE to_date > NOW()
 			   )
-ORDER BY salary;
+ORDER BY salary; ##ALSO WRONG!!!
+
+-- INSTRUCTOR SOLUTION
+SELECT emp_no
+FROM salaries
+WHERE salary >
+(
+	SELECT AVG(salary) 
+    FROM salaries
+)
+	  AND to_date > NOW();
 
 #6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
 #Hint Number 1 You will likely use a combination of different kinds of subqueries.
@@ -116,3 +147,22 @@ FROM
 #JOIN salaries ON salaries.salary = ztable.salary 
 #WHERE salaries.to_date > CURDATE() #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 LIMIT 10;
+
+-- INSTRUCTOR SOLUTION
+SELECT
+        ( -- Numerator
+			SELECT COUNT(salary)-- COUNT salaries that are greater than the MAX salary minus one Standard Deviation
+			FROM salaries
+			WHERE to_date > NOW()
+			AND salary > (
+							(SELECT MAX(salary) FROM salaries WHERE to_date > NOW())
+							-
+							(SELECT STD(salary) FROM salaries WHERE to_date > NOW())
+						 )
+		) 
+        / -- DIVIDE the Numerator COUNT from Denominator COUNT to get percentage
+        ( -- Denominator
+			SELECT COUNT(*) -- COUNT total current salaries
+			FROM salaries 
+			WHERE to_date > NOW()
+        ) * 100 AS 'Percent of Salaries';
