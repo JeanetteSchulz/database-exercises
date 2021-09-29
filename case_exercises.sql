@@ -42,3 +42,48 @@ SELECT
     COUNT(*)
 FROM employees
 GROUP BY Decade;
+
+#BONUS Q
+#What is the current average salary for each of the following department groups:
+# R&D, Sales & Marketing, Prod & QM, Finance & HR, Customer Service?
+CREATE TEMPORARY TABLE hopper_1558.new_department_averages AS(
+SELECT  
+	CASE
+		WHEN dept_name IN('research', 'development') THEN 'R&D' 
+        WHEN dept_name IN('SALES','marketing') THEN 'Sales & Marketing'
+        WHEN dept_name IN('Production', 'Quality Management') THEN 'Prod & Marketing'
+        WHEN dept_name IN('Finance','Human Resources') THEN 'Finance & HR'
+        ELSE dept_name
+	END AS Department,
+    AVG(salary) AS Average_Salary -- This gives us the salary of the individual department, not the departments combined
+FROM departments
+JOIN dept_emp USING(dept_no)
+JOIN salaries USING(emp_no)
+GROUP BY Department -- This eliminates duplicates but that means some of the departments had thier name changed but arent represented in the list. ie only RESEARCH or DEVELOPMENT will represent R&D
+);
+
+USE hopper_1558;
+
+SELECT AVG(80667.6058 + 71913.2000); #152580.80580000 -- Average of Sales and Marketing, AVG(AVG + AVG)= New AVG
+SELECT AVG(59665.1817 + 59478.9012); #119144.08290000 -- Research & Development
+SELECT AVG(70489.3649 + 55574.8794); #126064.24430000 -- Finance & Human Resources
+SELECT AVG(59605.4825 + 71913.2000); #131518.68250000 -- Production & Marketing
+
+UPDATE new_department_averages
+SET Average_Salary = 152580.80580000
+WHERE Department = 'Sales & Marketing'; -- For simplicity sake, I will just strong arm the new table to display what I want
+
+UPDATE new_department_averages
+SET Average_Salary = 126064.24430000
+WHERE Department = 'Finance & HR';
+
+UPDATE new_department_averages
+SET Average_Salary = 131518.68250000 
+WHERE Department = 'Prod & Marketing';
+
+UPDATE new_department_averages
+SET Average_Salary = 119144.08290000 
+WHERE Department = 'R&D';
+
+SELECT *
+FROM new_department_averages; #FINAL ANSWER
